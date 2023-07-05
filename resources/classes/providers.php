@@ -130,7 +130,7 @@ if (!class_exists('providers')) {
 								$sql = "select ".$this->name."_uuid as uuid, ".$this->toggle_field." as toggle from v_".$this->table." ";
 								$sql .= "where ".$this->name."_uuid in (".implode(', ', $uuids).") ";
 								$database = new database;
-								$rows = $database->select($sql, $parameters, 'all');
+								$rows = $database->select($sql, $parameters ?? null, 'all');
 								if (is_array($rows) && @sizeof($rows) != 0) {
 									foreach ($rows as $row) {
 										$states[$row['uuid']] = $row['toggle'];
@@ -163,74 +163,6 @@ if (!class_exists('providers')) {
 									message::add($text['message-toggle']);
 							}
 							unset($records, $states);
-					}
-			}
-		}
-
-		/**
-		 * copy rows from the database
-		 */
-		public function copy($records) {
-			if (permission_exists($this->name.'_add')) {
-
-				//add multi-lingual support
-					$language = new text;
-					$text = $language->get();
-
-				//validate the token
-					$token = new token;
-					if (!$token->validate($_SERVER['PHP_SELF'])) {
-						message::add($text['message-invalid_token'],'negative');
-						header('Location: '.$this->location);
-						exit;
-					}
-
-				//copy the checked records
-					if (is_array($records) && @sizeof($records) != 0) {
-
-						//get checked records
-							foreach($records as $record) {
-								if ($record['checked'] == 'true' && is_uuid($record['uuid'])) {
-									$uuids[] = "'".$record['uuid']."'";
-								}
-							}
-
-						//create the array from existing data
-							if (is_array($uuids) && @sizeof($uuids) != 0) {
-								$sql = "select * from v_".$this->table." ";
-								$sql .= "where ".$this->name."_uuid in (".implode(', ', $uuids).") ";
-								$database = new database;
-								$rows = $database->select($sql, $parameters, 'all');
-								if (is_array($rows) && @sizeof($rows) != 0) {
-									$x = 0;
-									foreach ($rows as $row) {
-										//copy data
-											$array[$this->table][$x] = $row;
-
-										//add copy to the description
-											$array[$this->table][$x][$this->name.'_uuid'] = uuid();
-											$array[$this->table][$x][$this->description_field] = trim($row[$this->description_field]).' ('.$text['label-copy'].')';
-
-										//increment the id
-											$x++;
-									}
-								}
-								unset($sql, $parameters, $rows, $row);
-							}
-
-						//save the changes and set the message
-							if (is_array($array) && @sizeof($array) != 0) {
-								//save the array
-									$database = new database;
-									$database->app_name = $this->app_name;
-									$database->app_uuid = $this->app_uuid;
-									$database->save($array);
-									unset($array);
-
-								//set message
-									message::add($text['message-copy']);
-							}
-							unset($records);
 					}
 			}
 		}
