@@ -575,13 +575,26 @@
 			echo "				</select>\n";
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
-			echo "				<input class='formfld' type='text' name='provider_settings[$x][provider_setting_category]' maxlength='255' value=\"".escape($row["provider_setting_category"] ?? '')."\">\n";
+			echo "				<input class='formfld' style='width: 10em;' type='text' name='provider_settings[$x][provider_setting_category]' maxlength='255' value=\"".escape($row["provider_setting_category"] ?? '')."\">\n";
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
-			echo "				<input class='formfld' type='text' name='provider_settings[$x][provider_setting_subcategory]' maxlength='255' value=\"".escape($row["provider_setting_subcategory"] ?? '')."\">\n";
+			echo "				<input class='formfld' style='width: 10em;' type='text' name='provider_settings[$x][provider_setting_subcategory]' maxlength='255' value=\"".escape($row["provider_setting_subcategory"] ?? '')."\">\n";
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
-			echo "				<input class='formfld' type='text' name='provider_settings[$x][provider_setting_type]' maxlength='255' value=\"".escape($row["provider_setting_type"] ?? '')."\">\n";
+			echo "				<select class='formfld' name='provider_settings[$x][provider_setting_type]'\">\n";
+			if ($row["provider_setting_type"] == "text") {
+				echo "					<option value='text' selected='selected'>text</option>\n";
+			}
+			else {
+				echo "					<option value='text'>text</option>\n";
+			}
+			if ($row["provider_setting_type"] == "array") {
+				echo "					<option value='array' selected='selected'>array</option>\n";
+			}
+			else {
+				echo "					<option value='array'>array</option>\n";
+			}
+			echo "				</select>\n";
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
 			echo "				<input class='formfld' type='text' name='provider_settings[$x][provider_setting_name]' maxlength='255' value=\"".escape($row["provider_setting_name"] ?? '')."\">\n";
