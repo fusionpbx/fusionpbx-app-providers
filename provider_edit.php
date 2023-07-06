@@ -575,10 +575,10 @@
 			echo "				</select>\n";
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
-			echo "				<input class='formfld' style='width: 10em;' type='text' name='provider_settings[$x][provider_setting_category]' maxlength='255' value=\"".escape($row["provider_setting_category"] ?? '')."\">\n";
+			echo "				<input class='formfld' style='width: 120px;' type='text' name='provider_settings[$x][provider_setting_category]' maxlength='255' value=\"".escape($row["provider_setting_category"] ?? '')."\">\n";
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
-			echo "				<input class='formfld' style='width: 10em;' type='text' name='provider_settings[$x][provider_setting_subcategory]' maxlength='255' value=\"".escape($row["provider_setting_subcategory"] ?? '')."\">\n";
+			echo "				<input class='formfld' style='width: 120px;' type='text' name='provider_settings[$x][provider_setting_subcategory]' maxlength='255' value=\"".escape($row["provider_setting_subcategory"] ?? '')."\">\n";
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
 			echo "				<select class='formfld' name='provider_settings[$x][provider_setting_type]'\">\n";
