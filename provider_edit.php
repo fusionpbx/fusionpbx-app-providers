@@ -560,7 +560,7 @@
 		foreach ($provider_settings as $row) {
 			echo "		<tr>\n";
 			//echo "			<input type='hidden' name='provider_settings[$x][domain_uuid]' value=\"".escape($row["domain_uuid"])."\">\n";
-			echo "			<input type='hidden' name='provider_settings[$x][provider_uuid]' value=\"".escape($row["provider_uuid"] ?? $provider_uuid)."\">\n";
+			echo "			<input type='hidden' name='provider_settings[$x][provider_uuid]' value=\"".escape($row["provider_uuid"] ?? $provider_uuid ?? uuid())."\">\n";
 			echo "			<input type='hidden' name='provider_settings[$x][provider_setting_uuid]' value=\"".escape($row["provider_setting_uuid"] ?? uuid())."\">\n";
 			echo "			<td class='formfld'>\n";
 			echo "				<select class='formfld' name='provider_settings[$x][application_uuid]'>\n";
@@ -677,7 +677,7 @@
 		foreach ($provider_addresses as $row) {
 			echo "		<tr>\n";
 			echo "			<input type='hidden' name='provider_addresses[$x][domain_uuid]' value=\"".escape($row["domain_uuid"] ?? '')."\">\n";
-			echo "			<input type='hidden' name='provider_addresses[$x][provider_uuid]' value=\"".escape($row["provider_uuid"] ?? $provider_uuid)."\">\n";
+			echo "			<input type='hidden' name='provider_addresses[$x][provider_uuid]' value=\"".escape($row["provider_uuid"] ?? $provider_uuid ?? uuid())."\">\n";
 			echo "			<input type='hidden' name='provider_addresses[$x][provider_address_uuid]' value=\"".escape($row["provider_address_uuid"] ?? uuid())."\">\n";
 			echo "			<td class='formfld'>\n";
 			echo "				<input class='formfld' type='text' name='provider_addresses[$x][provider_address_cidr]' maxlength='255' value=\"".escape($row["provider_address_cidr"] ?? '')."\">\n";
