@@ -97,6 +97,7 @@
 	echo "</div>\n";
 
 //providers
+	echo "<div class='card'>\n";
 	foreach ($array['providers'] as $row) {
 		echo "<div class='row'>\n";
 		echo "	<div class='col-sm-4' style='padding-top: 0px;'>\n";
@@ -143,10 +144,11 @@
 
 		echo "<br/><br/><hr /><br/>\n";
 	}
+	echo "</div>\n";
 
 	echo "<br><br>\n";
 	echo "<hr>\n";
-	echO "<br>\n";
+	echo "<br>\n";
 
 //include the footer
 	require_once "resources/footer.php";
