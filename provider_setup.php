@@ -41,6 +41,9 @@
 	$language = new text;
 	$text = $language->get();
 
+//connect to the database
+	$database = database::new();
+
 //get the provider
 	if (isset($_GET['id'])) {
 
@@ -68,7 +71,6 @@
 
 //installed providers
 	$sql = "select provider_uuid from v_providers ";
-	$database = new database;
 	$database_providers = $database->select($sql, null, 'all');
 
 //loop through installed providers

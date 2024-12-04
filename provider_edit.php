@@ -41,6 +41,9 @@
 	$language = new text;
 	$text = $language->get();
 
+//connect to the database
+	$database = database::new();
+
 //action add or update
 	if (!empty($_REQUEST["id"]) && is_uuid($_REQUEST["id"])) {
 		$action = "update";
@@ -103,20 +106,17 @@
 				switch ($_POST['action']) {
 					case 'copy':
 						if (permission_exists('provider_add')) {
-							$obj = new database;
-							$obj->copy($array);
+							$database->copy($array);
 						}
 						break;
 					case 'delete':
 						if (permission_exists('provider_delete')) {
-							$obj = new database;
-							$obj->delete($array);
+							$database->delete($array);
 						}
 						break;
 					case 'toggle':
 						if (permission_exists('provider_update')) {
-							$obj = new database;
-							$obj->toggle($array);
+							$database->toggle($array);
 						}
 						break;
 				}
@@ -190,7 +190,6 @@
 			}
 
 		//save the data
-			$database = new database;
 			$database->app_name = 'providers';
 			$database->app_uuid = '35187839-237e-4271-b8a1-9b9c45dc8833';
 			$database->save($array);
@@ -224,7 +223,6 @@
 		//$sql .= "and domain_uuid = :domain_uuid ";
 		//$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		$parameters['provider_uuid'] = $provider_uuid;
-		$database = new database;
 		$row = $database->select($sql, $parameters, 'row');
 		if (is_array($row) && @sizeof($row) != 0) {
 			$provider_name = $row["provider_name"];
@@ -250,7 +248,6 @@
 		//$sql .= "and domain_uuid = '".$domain_uuid."' ";
 		//$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		$parameters['provider_uuid'] = $provider_uuid;
-		$database = new database;
 		$provider_addresses = $database->select($sql, $parameters, 'all');
 		unset ($sql, $parameters);
 	}
@@ -286,9 +283,6 @@
 		$sql .= "where provider_uuid = :provider_uuid ";
 		$sql .= "order by provider_setting_category, provider_setting_subcategory, provider_setting_name asc ";
 		$parameters['provider_uuid'] = $provider_uuid;
-		//echo $sql;
-		//view_array($parameters);
-		$database = new database;
 		$provider_settings = $database->select($sql, $parameters, 'all');
 		unset ($sql, $parameters);
 	}

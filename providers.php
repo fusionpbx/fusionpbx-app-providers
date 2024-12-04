@@ -42,6 +42,9 @@
 	$language = new text;
 	$text = $language->get();
 
+//connect to the database
+	$database = database::new();
+
 //get the http post data
 	if (!empty($_POST) && is_array($_POST['providers'])) {
 		$action = $_POST['action'];
@@ -78,7 +81,6 @@
 		}
 
 		//prepare the database object
-		$database = new database;
 		$database->app_name = 'providers';
 		$database->app_uuid = '35187839-237e-4271-b8a1-9b9c45dc8833';
 
@@ -129,7 +131,6 @@
 		$parameters['search'] = '%'.$search.'%';
 	}
 	$parameters['domain_uuid'] = $domain_uuid;
-	$database = new database;
 	$num_rows = $database->select($sql, $parameters, 'column');
 	unset($sql, $parameters);
 
@@ -164,7 +165,6 @@
 	}
 	$sql .= limit_offset($rows_per_page, $offset);
 	$parameters['domain_uuid'] = $domain_uuid;
-	$database = new database;
 	$providers = $database->select($sql, $parameters, 'all');
 	unset($sql, $parameters);
 
