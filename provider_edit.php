@@ -578,16 +578,16 @@
 			echo "			<td class='formfld'>\n";
 			echo "				<select class='formfld' name='provider_settings[$x][provider_setting_type]'\">\n";
 			if ($row["provider_setting_type"] == "text") {
-				echo "					<option value='text' selected='selected'>text</option>\n";
+				echo "					<option value='text' selected='selected'>Text</option>\n";
 			}
 			else {
-				echo "					<option value='text'>text</option>\n";
+				echo "					<option value='text'>Text</option>\n";
 			}
 			if ($row["provider_setting_type"] == "array") {
-				echo "					<option value='array' selected='selected'>array</option>\n";
+				echo "					<option value='array' selected='selected'>Array</option>\n";
 			}
 			else {
-				echo "					<option value='array'>array</option>\n";
+				echo "					<option value='array'>Array</option>\n";
 			}
 			echo "				</select>\n";
 			echo "			</td>\n";
@@ -596,7 +596,7 @@
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
 			if (substr($row["provider_setting_name"] ?? '', -8) == 'username' || substr($row["provider_setting_name"] ?? '', -8) == 'password') {
-				echo "				<input class='formfld' type='password' name='provider_settings[$x][provider_setting_value]' autocomplete='new-password' onmouseover=\"this.type='text';\" onfocus=\"this.type='text';\" onmouseout=\"if (!$(this).is(':focus')) { this.type='password'; }\" onblur=\"this.type='password';\" maxlength='255' value=\"".escape($row["provider_setting_value"] ?? '')."\">\n";
+				echo "				<input class='formfld password' type='password' name='provider_settings[$x][provider_setting_value]' autocomplete='new-password' onmouseover=\"this.type='text';\" onfocus=\"this.type='text';\" onmouseout=\"if (!$(this).is(':focus')) { this.type='password'; }\" onblur=\"this.type='password';\" maxlength='255' value=\"".escape($row["provider_setting_value"] ?? '')."\">\n";
 			}
 			else {
 				echo "				<input class='formfld' type='text' name='provider_settings[$x][provider_setting_value]' maxlength='255' value=\"".escape($row["provider_setting_value"] ?? '')."\">\n";
@@ -623,10 +623,18 @@
 			echo "			</td>\n";
 			*/
 			echo "			<td class='formfld'>\n";
-			echo "				<select class='formfld' name='provider_settings[$x][provider_setting_enabled]'>\n";
-			echo "					<option value='true'>".$text['label-true']."</option>\n";
-			echo "					<option value='false' ".(empty($row['provider_setting_enabled']) || $row['provider_setting_enabled'] == "false" ? "selected='selected'" : null).">".$text['label-false']."</option>\n";
-			echo "				</select>\n";
+			if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
+				echo "			<label class='switch'>\n";
+				echo "				<input type='checkbox' name='provider_settings[$x][provider_setting_enabled]' value='true' ".(!empty($row['provider_setting_enabled']) && $row['provider_setting_enabled'] == 'true' ? "checked='checked'" : null).">\n";
+				echo "				<span class='slider'></span>\n";
+				echo "			</label>\n";
+			}
+			else {
+				echo "			<select class='formfld' name='provider_settings[$x][provider_setting_enabled]'>\n";
+				echo "				<option value='true'>".$text['option-true']."</option>\n";
+				echo "				<option value='false' ".(empty($row['provider_setting_enabled']) || $row['provider_setting_enabled'] == 'false' ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
+				echo "			</select>\n";
+			}
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
 			echo "				<input class='formfld' type='text' name='provider_settings[$x][provider_setting_description]' maxlength='255' value=\"".escape($row["provider_setting_description"] ?? '')."\">\n";
@@ -678,10 +686,18 @@
 			echo "				<input class='formfld' type='text' name='provider_addresses[$x][provider_address_cidr]' maxlength='255' value=\"".escape($row["provider_address_cidr"] ?? '')."\">\n";
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
-			echo "				<select class='formfld' name='provider_addresses[$x][provider_address_enabled]'>\n";
-			echo "					<option value='true'>".$text['label-true']."</option>\n";
-			echo "					<option value='false' ".(empty($row['provider_address_enabled']) || $row['provider_address_enabled'] == "false" ? "selected='selected'" : null).">".$text['label-false']."</option>\n";
-			echo "				</select>\n";
+			if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
+				echo "			<label class='switch'>\n";
+				echo "				<input type='checkbox' name='provider_addresses[$x][provider_address_enabled]' value='true' ".(!empty($row['provider_address_enabled']) && $row['provider_address_enabled'] == 'true' ? "checked='checked'" : null).">\n";
+				echo "				<span class='slider'></span>\n";
+				echo "			</label>\n";
+			}
+			else {
+				echo "			<select class='formfld' name='provider_addresses[$x][provider_address_enabled]'>\n";
+				echo "				<option value='true'>".$text['option-true']."</option>\n";
+				echo "				<option value='false' ".(empty($row['provider_address_enabled']) || $row['provider_address_enabled'] == 'false' ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
+				echo "			</select>\n";
+			}
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
 			echo "				<input class='formfld' type='text' name='provider_addresses[$x][provider_address_description]' maxlength='255' value=\"".escape($row["provider_address_description"] ?? '')."\">\n";
