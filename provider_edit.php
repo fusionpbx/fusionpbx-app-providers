@@ -44,6 +44,10 @@
 //connect to the database
 	$database = database::new();
 
+//get the software version number
+	$version_array = explode('.', software::version());
+	$version_number = floatval($version_array[0].'.'.$version_array[1]);
+
 //action add or update
 	if (!empty($_REQUEST["id"]) && is_uuid($_REQUEST["id"])) {
 		$action = "update";
@@ -623,17 +627,32 @@
 			echo "			</td>\n";
 			*/
 			echo "			<td class='formfld'>\n";
-			if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
-				echo "			<label class='switch'>\n";
-				echo "				<input type='checkbox' name='provider_settings[$x][provider_setting_enabled]' value='true' ".(!empty($row['provider_setting_enabled']) && $row['provider_setting_enabled'] == 'true' ? "checked='checked'" : null).">\n";
-				echo "				<span class='slider'></span>\n";
-				echo "			</label>\n";
+			if ($version_number >= 5.5) {
+				if ($input_toggle_style_switch) {
+					echo "	<span class='switch'>\n";
+				}
+				echo "		<select class='formfld' id='provider_settings_".$x."' name='provider_settings[$x][provider_setting_enabled]'>\n";
+				echo "			<option value='true' ".($row['provider_setting_enabled'] === true ? "selected='selected'" : null).">".$text['option-true']."</option>\n";
+				echo "			<option value='false' ".($row['provider_setting_enabled'] === false ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
+				echo "		</select>\n";
+				if ($input_toggle_style_switch) {
+					echo "		<span class='slider'></span>\n";
+					echo "	</span>\n";
+				}
 			}
 			else {
-				echo "			<select class='formfld' name='provider_settings[$x][provider_setting_enabled]'>\n";
-				echo "				<option value='true'>".$text['option-true']."</option>\n";
-				echo "				<option value='false' ".(empty($row['provider_setting_enabled']) || $row['provider_setting_enabled'] == 'false' ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
-				echo "			</select>\n";
+				if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
+					echo "			<label class='switch'>\n";
+					echo "				<input type='checkbox' name='provider_settings[$x][provider_setting_enabled]' value='true' ".(!empty($row['provider_setting_enabled']) && $row['provider_setting_enabled'] == 'true' ? "checked='checked'" : null).">\n";
+					echo "				<span class='slider'></span>\n";
+					echo "			</label>\n";
+				}
+				else {
+					echo "			<select class='formfld' name='provider_settings[$x][provider_setting_enabled]'>\n";
+					echo "				<option value='true'>".$text['option-true']."</option>\n";
+					echo "				<option value='false' ".(empty($row['provider_setting_enabled']) || $row['provider_setting_enabled'] == 'false' ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
+					echo "			</select>\n";
+				}
 			}
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
@@ -686,17 +705,32 @@
 			echo "				<input class='formfld' type='text' name='provider_addresses[$x][provider_address_cidr]' maxlength='255' value=\"".escape($row["provider_address_cidr"] ?? '')."\">\n";
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
-			if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
-				echo "			<label class='switch'>\n";
-				echo "				<input type='checkbox' name='provider_addresses[$x][provider_address_enabled]' value='true' ".(!empty($row['provider_address_enabled']) && $row['provider_address_enabled'] == 'true' ? "checked='checked'" : null).">\n";
-				echo "				<span class='slider'></span>\n";
-				echo "			</label>\n";
+			if ($version_number >= 5.5) {
+				if ($input_toggle_style_switch) {
+					echo "	<span class='switch'>\n";
+				}
+				echo "		<select class='formfld' id='provider_address_enabled_".$x."' name='provider_addresses[$x][provider_address_enabled]'>\n";
+				echo "			<option value='true' ".($row['provider_address_enabled'] === true ? "selected='selected'" : null).">".$text['option-true']."</option>\n";
+				echo "			<option value='false' ".($row['provider_address_enabled'] === false ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
+				echo "		</select>\n";
+				if ($input_toggle_style_switch) {
+					echo "		<span class='slider'></span>\n";
+					echo "	</span>\n";
+				}
 			}
 			else {
-				echo "			<select class='formfld' name='provider_addresses[$x][provider_address_enabled]'>\n";
-				echo "				<option value='true'>".$text['option-true']."</option>\n";
-				echo "				<option value='false' ".(empty($row['provider_address_enabled']) || $row['provider_address_enabled'] == 'false' ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
-				echo "			</select>\n";
+				if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
+					echo "			<label class='switch'>\n";
+					echo "				<input type='checkbox' name='provider_addresses[$x][provider_address_enabled]' value='true' ".(!empty($row['provider_address_enabled']) && $row['provider_address_enabled'] == 'true' ? "checked='checked'" : null).">\n";
+					echo "				<span class='slider'></span>\n";
+					echo "			</label>\n";
+				}
+				else {
+					echo "			<select class='formfld' name='provider_addresses[$x][provider_address_enabled]'>\n";
+					echo "				<option value='true'>".$text['option-true']."</option>\n";
+					echo "				<option value='false' ".(empty($row['provider_address_enabled']) || $row['provider_address_enabled'] == 'false' ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
+					echo "			</select>\n";
+				}
 			}
 			echo "			</td>\n";
 			echo "			<td class='formfld'>\n";
@@ -741,18 +775,34 @@
 	echo "	".$text['label-provider_enabled']."\n";
 	echo "</td>\n";
 	echo "<td class='vtable' style='position: relative;' align='left'>\n";
-	if (substr($_SESSION['theme']['input_toggle_style']['text'], 0, 6) == 'switch') {
-		echo "	<label class='switch'>\n";
-		echo "		<input type='checkbox' id='provider_enabled' name='provider_enabled' value='true' ".(!empty($provider_enabled) && $provider_enabled == 'true' ? "checked='checked'" : null).">\n";
-		echo "		<span class='slider'></span>\n";
-		echo "	</label>\n";
+
+	if ($version_number >= 5.5) {
+		if ($input_toggle_style_switch) {
+			echo "	<span class='switch'>\n";
+		}
+		echo "		<select class='formfld' id='provider_enabled' name='provider_enabled'>\n";
+		echo "			<option value='true' ".($provider_enabled === true ? "selected='selected'" : null).">".$text['option-true']."</option>\n";
+		echo "			<option value='false' ".($provider_enabled === false ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
+		echo "		</select>\n";
+		if ($input_toggle_style_switch) {
+			echo "		<span class='slider'></span>\n";
+			echo "	</span>\n";
+		}
+	} else {
+		if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
+			echo "	<label class='switch'>\n";
+			echo "		<input type='checkbox' id='provider_enabled' name='provider_enabled' value='true' ".(!empty($provider_enabled) && $provider_enabled == 'true' ? "checked='checked'" : null).">\n";
+			echo "		<span class='slider'></span>\n";
+			echo "	</label>\n";
+		}
+		else {
+			echo "	<select class='formfld' id='provider_enabled' name='provider_enabled'>\n";
+			echo "		<option value='true'>".$text['option-true']."</option>\n";
+			echo "		<option value='false' ".(!empty($provider_enabled) && $provider_enabled == 'false' ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
+			echo "	</select>\n";
+		}
 	}
-	else {
-		echo "	<select class='formfld' id='provider_enabled' name='provider_enabled'>\n";
-		echo "		<option value='true'>".$text['option-true']."</option>\n";
-		echo "		<option value='false' ".(!empty($provider_enabled) && $provider_enabled == 'false' ? "selected='selected'" : null).">".$text['option-false']."</option>\n";
-		echo "	</select>\n";
-	}
+
 	echo "</td>\n";
 	echo "</tr>\n";
 
