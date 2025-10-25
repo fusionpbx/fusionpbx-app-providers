@@ -725,7 +725,7 @@
 				}
 			}
 			else {
-				if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
+				if (substr($settings->get('theme', 'input_toggle_style', ''), 0, 6) == 'switch') {
 					echo "			<label class='switch'>\n";
 					echo "				<input type='checkbox' name='provider_addresses[$x][provider_address_enabled]' value='true' ".(!empty($row['provider_address_enabled']) && $row['provider_address_enabled'] == 'true' ? "checked='checked'" : '').">\n";
 					echo "				<span class='slider'></span>\n";
@@ -794,7 +794,7 @@
 			echo "	</span>\n";
 		}
 	} else {
-		if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
+		if (substr($settings->get('theme', 'input_toggle_style', ''), 0, 6) == 'switch') {
 			echo "	<label class='switch'>\n";
 			echo "		<input type='checkbox' id='provider_enabled' name='provider_enabled' value='true' ".(!empty($provider_enabled) && $provider_enabled == 'true' ? "checked='checked'" : '').">\n";
 			echo "		<span class='slider'></span>\n";
