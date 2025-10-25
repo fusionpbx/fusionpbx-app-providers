@@ -648,7 +648,7 @@
 				}
 			}
 			else {
-				if (substr($settings->get('theme', 'input_toggle_style'), 0, 6) == 'switch') {
+				if (substr($settings->get('theme', 'input_toggle_style', ''), 0, 6) == 'switch') {
 					echo "			<label class='switch'>\n";
 					echo "				<input type='checkbox' name='provider_settings[$x][provider_setting_enabled]' value='true' ".(!empty($row['provider_setting_enabled']) && $row['provider_setting_enabled'] == 'true' ? "checked='checked'" : '').">\n";
 					echo "				<span class='slider'></span>\n";
