@@ -17,7 +17,7 @@
 
 	The Initial Developer of the Original Code is
 	Mark J Crane <markjcrane@fusionpbx.com>
-	Portions created by the Initial Developer are Copyright (C) 2023
+	Portions created by the Initial Developer are Copyright (C) 2023-2025
 	the Initial Developer. All Rights Reserved.
 
 	Contributor(s):
@@ -29,10 +29,7 @@
 	require_once "resources/check_auth.php";
 
 //check permissions
-	if (permission_exists('provider_add')) {
-		//access granted
-	}
-	else {
+	if (!permission_exists('provider_add')) {
 		echo "access denied";
 		exit;
 	}
@@ -93,7 +90,7 @@
 	echo "<div class='action_bar' id='action_bar'>\n";
 	echo "	<div class='heading'><b>".$text['title-providers']."</b></div>\n";
 	echo "	<div class='actions'>\n";
-	echo button::create(['type'=>'button','label'=>$text['button-back'],'icon'=>$_SESSION['theme']['button_icon_back'],'id'=>'btn_back','link'=>'providers.php'.(!empty($page) && is_numeric($page) ? '?page='.$page : null)]);
+	echo button::create(['type'=>'button','label'=>$text['button-back'],'icon'=>$settings->get('theme','button_icon_back'),'id'=>'btn_back','link'=>'providers.php'.(!empty($page) && is_numeric($page) ? '?page='.$page : null)]);
 	echo "	</div>\n";
 	echo "	<div style='clear: both;'></div>\n";
 	echo "</div>\n";
@@ -154,5 +151,3 @@
 
 //include the footer
 	require_once "resources/footer.php";
-
-?>
