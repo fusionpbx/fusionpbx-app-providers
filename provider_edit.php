@@ -17,7 +17,7 @@
 
 	The Initial Developer of the Original Code is
 	Mark J Crane <markjcrane@fusionpbx.com>
-	Portions created by the Initial Developer are Copyright (C) 2023
+	Portions created by the Initial Developer are Copyright (C) 2023-2025
 	the Initial Developer. All Rights Reserved.
 
 	Contributor(s):
@@ -29,10 +29,7 @@
 	require_once "resources/check_auth.php";
 
 //check permissions
-	if (permission_exists('provider_add') || permission_exists('provider_edit')) {
-		//access granted
-	}
-	else {
+	if (!(permission_exists('provider_add') || permission_exists('provider_edit'))) {
 		echo "access denied";
 		exit;
 	}
@@ -69,7 +66,7 @@
 		$provider_settings = $_POST["provider_settings"];
 		$provider_addresses = $_POST["provider_addresses"];
 		$domain_uuid = $_POST["domain_uuid"];
-		$provider_enabled = $_POST["provider_enabled"] ?? 'false';
+		$provider_enabled = $_POST["provider_enabled"];
 		$provider_description = $_POST["provider_description"];
 	}
 
@@ -198,8 +195,6 @@
 			}
 
 		//save the data
-			$database->app_name = 'providers';
-			$database->app_uuid = '35187839-237e-4271-b8a1-9b9c45dc8833';
 			$database->save($array);
 
 		//redirect the user
@@ -224,7 +219,7 @@
 		//$sql .= " provider_settings, ";
 		//$sql .= " provider_addresses, ";
 		$sql .= " domain_uuid, ";
-		$sql .= " cast(provider_enabled as text), ";
+		$sql .= " provider_enabled, ";
 		$sql .= " provider_description ";
 		$sql .= "from v_providers ";
 		$sql .= "where provider_uuid = :provider_uuid ";
@@ -237,7 +232,7 @@
 			//$provider_settings = $row["provider_settings"];
 			//$provider_addresses = $row["provider_addresses"];
 			$domain_uuid = $row["domain_uuid"];
-			$provider_enabled = $row["provider_enabled"];
+			$provider_enabled = $row["provider_enabled"] ?? false;
 			$provider_description = $row["provider_description"];
 		}
 		unset($sql, $parameters, $row);
@@ -248,7 +243,7 @@
 		$sql = "select ";
 		$sql .= " provider_address_uuid, ";
 		$sql .= " provider_address_cidr, ";
-		$sql .= " cast(provider_address_enabled as text), ";
+		$sql .= " provider_address_enabled, ";
 		$sql .= " provider_address_description ";
 		$sql .= "from v_provider_addresses ";
 		$sql .= "where provider_uuid = :provider_uuid ";
@@ -285,7 +280,7 @@
 		$sql .= " provider_setting_name, ";
 		$sql .= " provider_setting_value, ";
 		//$sql .= " provider_setting_order, ";
-		$sql .= " cast(provider_setting_enabled as text), ";
+		$sql .= " provider_setting_enabled, ";
 		$sql .= " provider_setting_description ";
 		$sql .= "from v_provider_settings ";
 		$sql .= "where provider_uuid = :provider_uuid ";
@@ -403,21 +398,11 @@
 
 //add an empty row(s) to the provider settings array
 	if (!empty($provider_settings) && is_array($provider_settings) && count($provider_settings) == 0) {
-		if (isset($_SESSION['providers']['setting_add_rows']['numeric'])) {
-			$rows = $_SESSION['providers']['setting_add_rows']['numeric'];
-		}
-		else {
-			$rows = 15;
-		}
+		$rows = $settings->get('providers','setting_add_rows',15);
 		$id = 0;
 	}
 	if (!empty($provider_settings) && is_array($provider_settings) && count($provider_settings) > 0) {
-		if (isset($_SESSION['providers']['setting_edit_rows']['numeric'])) {
-			$rows = $_SESSION['providers']['setting_edit_rows']['numeric'];
-		}
-		else {
-			$rows = 1;
-		}
+		$rows = $settings->get('providers','setting_edit_rows',1);
 		$id = count($provider_settings)+1;
 	}
 	if (!empty($rows) && is_array($rows) && @sizeof($rows) != 0) {
@@ -431,7 +416,7 @@
 			$provider_settings[$id]['provider_setting_name'] = '';
 			$provider_settings[$id]['provider_setting_value'] = '';
 			//$provider_settings[$id]['provider_setting_order'] = '';
-			$provider_settings[$id]['provider_setting_enabled'] = 'true';
+			$provider_settings[$id]['provider_setting_enabled'] = true;
 			$provider_settings[$id]['provider_setting_description'] = '';
 			$id++;
 		}
@@ -439,21 +424,11 @@
 
 //add an empty row(s) to the provider addresses array
 	if (!empty($provider_addresses) && is_array($provider_addresses) && count($provider_addresses) == 0) {
-		if (isset($_SESSION['providers']['address_add_rows']['numeric'])) {
-			$rows = $_SESSION['providers']['address_add_rows']['numeric'];
-		}
-		else {
-			$rows = 5;
-		}
+		$rows = $settings->get('providers','address_add_rows',5);
 		$id = 0;
 	}
 	if (!empty($provider_addresses) && is_array($provider_addresses) && count($provider_addresses) > 0) {
-		if (isset($_SESSION['providers']['address_edit_rows']['numeric'])) {
-			$rows = $_SESSION['providers']['address_edit_rows']['numeric'];
-		}
-		else {
-			$rows = 1;
-		}
+		$rows = $settings->get('providers','address_edit_rows',1);
 		$id = count($provider_addresses)+1;
 	}
 	if (!empty($rows) && is_array($rows) && @sizeof($rows) != 0) {
@@ -462,7 +437,7 @@
 			$provider_addresses[$id]['provider_uuid'] = $provider_uuid;
 			$provider_addresses[$id]['provider_address_uuid'] = uuid();
 			$provider_addresses[$id]['provider_address_cidr'] = '';
-			$provider_addresses[$id]['provider_address_enabled'] = 'true';
+			$provider_addresses[$id]['provider_address_enabled'] = true;
 			$provider_addresses[$id]['provider_address_description'] = '';
 			$id++;
 		}
@@ -494,16 +469,16 @@
 	echo "<div class='action_bar' id='action_bar'>\n";
 	echo "	<div class='heading'><b>".$text['title-provider']."</b></div>\n";
 	echo "	<div class='actions'>\n";
-	echo button::create(['type'=>'button','label'=>$text['button-back'],'icon'=>$_SESSION['theme']['button_icon_back'],'id'=>'btn_back','collapse'=>'hide-xs','style'=>'margin-right: 15px;','link'=>'providers.php']);
+	echo button::create(['type'=>'button','label'=>$text['button-back'],'icon'=>$settings->get('theme','button_icon_back'),'id'=>'btn_back','collapse'=>'hide-xs','style'=>'margin-right: 15px;','link'=>'providers.php']);
 	if ($action == 'update') {
 		if (permission_exists('provider_setting_add')) {
-			echo button::create(['type'=>'button','label'=>$text['button-copy'],'icon'=>$_SESSION['theme']['button_icon_copy'],'id'=>'btn_copy','name'=>'btn_copy','style'=>'display: none;','onclick'=>"modal_open('modal-copy','btn_copy');"]);
+			echo button::create(['type'=>'button','label'=>$text['button-copy'],'icon'=>$settings->get('theme','button_icon_copy'),'id'=>'btn_copy','name'=>'btn_copy','style'=>'display: none;','onclick'=>"modal_open('modal-copy','btn_copy');"]);
 		}
 		if (permission_exists('provider_setting_delete')) {
-			echo button::create(['type'=>'button','label'=>$text['button-delete'],'icon'=>$_SESSION['theme']['button_icon_delete'],'id'=>'btn_delete','name'=>'btn_delete','style'=>'display: none; margin-right: 15px;','onclick'=>"modal_open('modal-delete','btn_delete');"]);
+			echo button::create(['type'=>'button','label'=>$text['button-delete'],'icon'=>$settings->get('theme','button_icon_delete'),'id'=>'btn_delete','name'=>'btn_delete','style'=>'display: none; margin-right: 15px;','onclick'=>"modal_open('modal-delete','btn_delete');"]);
 		}
 	}
-	echo button::create(['type'=>'submit','label'=>$text['button-save'],'icon'=>$_SESSION['theme']['button_icon_save'],'id'=>'btn_save','collapse'=>'hide-xs']);
+	echo button::create(['type'=>'submit','label'=>$text['button-save'],'icon'=>$settings->get('theme','button_icon_save'),'id'=>'btn_save','collapse'=>'hide-xs']);
 	echo "	</div>\n";
 	echo "	<div style='clear: both;'></div>\n";
 	echo "</div>\n";
@@ -640,7 +615,7 @@
 				}
 				echo "		<select class='formfld' id='provider_settings_".$x."' name='provider_settings[$x][provider_setting_enabled]'>\n";
 				echo "			<option value='true'>".$text['option-true']."</option>\n";
-				echo "			<option value='false' ".($row['provider_setting_enabled'] == 'false' ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
+				echo "			<option value='false' ".($row['provider_setting_enabled'] == false ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
 				echo "		</select>\n";
 				if ($input_toggle_style_switch) {
 					echo "		<span class='slider'></span>\n";
@@ -650,14 +625,14 @@
 			else {
 				if (substr($settings->get('theme', 'input_toggle_style', ''), 0, 6) == 'switch') {
 					echo "			<label class='switch'>\n";
-					echo "				<input type='checkbox' name='provider_settings[$x][provider_setting_enabled]' value='true' ".(!empty($row['provider_setting_enabled']) && $row['provider_setting_enabled'] == 'true' ? "checked='checked'" : '').">\n";
+					echo "				<input type='checkbox' name='provider_settings[$x][provider_setting_enabled]' value='true' ".(!empty($row['provider_setting_enabled']) && $row['provider_setting_enabled'] == true ? "checked='checked'" : '').">\n";
 					echo "				<span class='slider'></span>\n";
 					echo "			</label>\n";
 				}
 				else {
 					echo "			<select class='formfld' name='provider_settings[$x][provider_setting_enabled]'>\n";
 					echo "				<option value='true'>".$text['option-true']."</option>\n";
-					echo "				<option value='false' ".(empty($row['provider_setting_enabled']) || $row['provider_setting_enabled'] == 'false' ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
+					echo "				<option value='false' ".(empty($row['provider_setting_enabled']) || $row['provider_setting_enabled'] == false ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
 					echo "			</select>\n";
 				}
 			}
@@ -717,7 +692,7 @@
 				}
 				echo "		<select class='formfld' id='provider_address_enabled_".$x."' name='provider_addresses[$x][provider_address_enabled]'>\n";
 				echo "			<option value='true' >".$text['option-true']."</option>\n";
-				echo "			<option value='false' ".($row['provider_address_enabled'] == 'false' ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
+				echo "			<option value='false' ".($row['provider_address_enabled'] == false ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
 				echo "		</select>\n";
 				if ($input_toggle_style_switch) {
 					echo "		<span class='slider'></span>\n";
@@ -727,14 +702,14 @@
 			else {
 				if (substr($settings->get('theme', 'input_toggle_style', ''), 0, 6) == 'switch') {
 					echo "			<label class='switch'>\n";
-					echo "				<input type='checkbox' name='provider_addresses[$x][provider_address_enabled]' value='true' ".(!empty($row['provider_address_enabled']) && $row['provider_address_enabled'] == 'true' ? "checked='checked'" : '').">\n";
+					echo "				<input type='checkbox' name='provider_addresses[$x][provider_address_enabled]' value='true' ".(!empty($row['provider_address_enabled']) && $row['provider_address_enabled'] == true ? "checked='checked'" : '').">\n";
 					echo "				<span class='slider'></span>\n";
 					echo "			</label>\n";
 				}
 				else {
 					echo "			<select class='formfld' name='provider_addresses[$x][provider_address_enabled]'>\n";
 					echo "				<option value='true'>".$text['option-true']."</option>\n";
-					echo "				<option value='false' ".(empty($row['provider_address_enabled']) || $row['provider_address_enabled'] == 'false' ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
+					echo "				<option value='false' ".(empty($row['provider_address_enabled']) || $row['provider_address_enabled'] == false ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
 					echo "			</select>\n";
 				}
 			}
@@ -787,23 +762,24 @@
 		}
 		echo "		<select class='formfld' id='provider_enabled' name='provider_enabled'>\n";
 		echo "			<option value='true' >".$text['option-true']."</option>\n";
-		echo "			<option value='false' ".($provider_enabled == 'false' ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
+		echo "			<option value='false' ".($provider_enabled == false ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
 		echo "		</select>\n";
 		if ($input_toggle_style_switch) {
 			echo "		<span class='slider'></span>\n";
 			echo "	</span>\n";
 		}
-	} else {
+	}
+	else {
 		if (substr($settings->get('theme', 'input_toggle_style', ''), 0, 6) == 'switch') {
 			echo "	<label class='switch'>\n";
-			echo "		<input type='checkbox' id='provider_enabled' name='provider_enabled' value='true' ".(!empty($provider_enabled) && $provider_enabled == 'true' ? "checked='checked'" : '').">\n";
+			echo "		<input type='checkbox' id='provider_enabled' name='provider_enabled' value='true' ".(!empty($provider_enabled) && $provider_enabled == true ? "checked='checked'" : '').">\n";
 			echo "		<span class='slider'></span>\n";
 			echo "	</label>\n";
 		}
 		else {
 			echo "	<select class='formfld' id='provider_enabled' name='provider_enabled'>\n";
 			echo "		<option value='true'>".$text['option-true']."</option>\n";
-			echo "		<option value='false' ".(!empty($provider_enabled) && $provider_enabled == 'false' ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
+			echo "		<option value='false' ".(!empty($provider_enabled) && $provider_enabled == false ? "selected='selected'" : '').">".$text['option-false']."</option>\n";
 			echo "	</select>\n";
 		}
 	}
