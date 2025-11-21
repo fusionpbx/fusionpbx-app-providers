@@ -17,7 +17,7 @@
 
 	The Initial Developer of the Original Code is
 	Mark J Crane <markjcrane@fusionpbx.com>
-	Portions created by the Initial Developer are Copyright (C) 2023
+	Portions created by the Initial Developer are Copyright (C) 2023-2025
 	the Initial Developer. All Rights Reserved.
 
 	Contributor(s):
@@ -30,10 +30,7 @@
 	require_once "resources/paging.php";
 
 //check permissions
-	if (permission_exists('provider_view')) {
-		//access granted
-	}
-	else {
+	if (!permission_exists('provider_view')) {
 		echo "access denied";
 		exit;
 	}
@@ -44,6 +41,9 @@
 
 //connect to the database
 	$database = database::new();
+
+//set from session variables
+	$list_row_edit_button = $settings->get('theme','list_row_edit_button',false);
 
 //get the http post data
 	if (!empty($_POST) && is_array($_POST['providers'])) {
@@ -79,10 +79,6 @@
 			//$array[$x]['provider_enabled'] = $row['provider_enabled'];
 			$x++;
 		}
-
-		//prepare the database object
-		$database->app_name = 'providers';
-		$database->app_uuid = '35187839-237e-4271-b8a1-9b9c45dc8833';
 
 		//send the array to the database class
 		switch ($action) {
@@ -135,7 +131,7 @@
 	unset($sql, $parameters);
 
 //prepare to page the results
-	$rows_per_page = ($_SESSION['domain']['paging']['numeric'] != '') ? $_SESSION['domain']['paging']['numeric'] : 50;
+	$rows_per_page = $settings->get('domain','paging',50);
 	$param = !empty($search) ? "&search=".$search : null;
 	$page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 0;
 	list($paging_controls, $rows_per_page) = paging($num_rows, $param, $rows_per_page);
@@ -181,24 +177,22 @@
 	echo "	<div class='heading'><b>".$text['title-providers']."</b><div class='count'>".number_format($num_rows)."</div></div>\n";
 	echo "	<div class='actions'>\n";
 	if (permission_exists('provider_add')) {
-		echo button::create(['type'=>'button','label'=>$text['button-add'],'icon'=>$_SESSION['theme']['button_icon_add'],'id'=>'btn_add','name'=>'btn_add','link'=>'provider_setup.php']);
-	}
-	if (permission_exists('provider_add')) {
-		echo button::create(['type'=>'button','label'=>$text['button-advanced'],'icon'=>$_SESSION['theme']['button_icon_add'],'id'=>'btn_add','name'=>'btn_add','link'=>'provider_edit.php']);
+		echo button::create(['type'=>'button','label'=>$text['button-add'],'icon'=>$settings->get('theme','button_icon_add'),'id'=>'btn_add','name'=>'btn_add','link'=>'provider_setup.php']);
+		echo button::create(['type'=>'button','label'=>$text['button-advanced'],'icon'=>$settings->get('theme','button_icon_add'),'id'=>'btn_add','name'=>'btn_add','link'=>'provider_edit.php']);
 	}
 	//if (permission_exists('provider_add') && $providers) {
-	//	echo button::create(['type'=>'button','label'=>$text['button-copy'],'icon'=>$_SESSION['theme']['button_icon_copy'],'id'=>'btn_copy','name'=>'btn_copy','style'=>'display:none;','onclick'=>"modal_open('modal-copy','btn_copy');"]);
+	//	echo button::create(['type'=>'button','label'=>$text['button-copy'],'icon'=>$settings->get('theme','button_icon_copy'),'id'=>'btn_copy','name'=>'btn_copy','style'=>'display:none;','onclick'=>"modal_open('modal-copy','btn_copy');"]);
 	//}
 	//if (permission_exists('provider_edit') && $providers) {
-	//	echo button::create(['type'=>'button','label'=>$text['button-toggle'],'icon'=>$_SESSION['theme']['button_icon_toggle'],'id'=>'btn_toggle','name'=>'btn_toggle','style'=>'display:none;','onclick'=>"modal_open('modal-toggle','btn_toggle');"]);
+	//	echo button::create(['type'=>'button','label'=>$text['button-toggle'],'icon'=>$settings->get('theme','button_icon_toggle'),'id'=>'btn_toggle','name'=>'btn_toggle','style'=>'display:none;','onclick'=>"modal_open('modal-toggle','btn_toggle');"]);
 	//}
 	if (permission_exists('provider_delete') && $providers) {
-		echo button::create(['type'=>'button','label'=>$text['button-delete'],'icon'=>$_SESSION['theme']['button_icon_delete'],'id'=>'btn_delete','name'=>'btn_delete','style'=>'display:none;','onclick'=>"modal_open('modal-delete','btn_delete');"]);
+		echo button::create(['type'=>'button','label'=>$text['button-delete'],'icon'=>$settings->get('theme','button_icon_delete'),'id'=>'btn_delete','name'=>'btn_delete','style'=>'display:none;','onclick'=>"modal_open('modal-delete','btn_delete');"]);
 	}
 	echo 		"<form id='form_search' class='inline' method='get'>\n";
 	echo 		"<input type='text' class='txt list-search' name='search' id='search' value=\"".escape($search ?? '')."\" placeholder=\"".$text['label-search']."\" onkeydown='list_search_reset();'>";
-	echo button::create(['label'=>$text['button-search'],'icon'=>$_SESSION['theme']['button_icon_search'],'type'=>'submit','id'=>'btn_search','style'=>(!empty($search) ? 'display: none;' : null)]);
-	echo button::create(['label'=>$text['button-reset'],'icon'=>$_SESSION['theme']['button_icon_reset'],'type'=>'button','id'=>'btn_reset','link'=>'providers.php','style'=>(empty($search) ? 'display: none;' : null)]);
+	echo button::create(['label'=>$text['button-search'],'icon'=>$settings->get('theme','button_icon_search'),'type'=>'submit','id'=>'btn_search','style'=>(!empty($search) ? 'display: none;' : null)]);
+	echo button::create(['label'=>$text['button-reset'],'icon'=>$settings->get('theme','button_icon_reset'),'type'=>'button','id'=>'btn_reset','link'=>'providers.php','style'=>(empty($search) ? 'display: none;' : null)]);
 	if ($paging_controls_mini != '') {
 		echo 	"<span style='margin-left: 15px;'>".$paging_controls_mini."</span>\n";
 	}
@@ -235,7 +229,7 @@
 	echo th_order_by('provider_name', $text['label-provider_name'], $order_by, $order);
 	echo th_order_by('provider_enabled', $text['label-provider_enabled'], $order_by, $order, null, "class='center'");
 	echo "	<th class='hide-sm-dn'>".$text['label-provider_description']."</th>\n";
-	if (permission_exists('provider_edit') && !empty($_SESSION['theme']['list_row_edit_button']['boolean']) && $_SESSION['theme']['list_row_edit_button']['boolean'] == 'true') {
+	if (permission_exists('provider_edit') && $list_row_edit_button) {
 		echo "	<td class='action-button'>&nbsp;</td>\n";
 	}
 	echo "</tr>\n";
@@ -272,7 +266,7 @@
 			}
 			echo "	</td>\n";
 			echo "	<td class='description overflow hide-sm-dn'>".escape($row['provider_description'])."</td>\n";
-			if (permission_exists('provider_edit') && !empty($_SESSION['theme']['list_row_edit_button']['boolean']) && $_SESSION['theme']['list_row_edit_button']['boolean'] == 'true') {
+			if (permission_exists('provider_edit') && $list_row_edit_button) {
 				echo "	<td class='action-button'>\n";
 				echo button::create(['type'=>'button','title'=>$text['button-edit'],'icon'=>$_SESSION['theme']['button_icon_edit'],'link'=>$list_row_url]);
 				echo "	</td>\n";
@@ -292,5 +286,3 @@
 
 //include the footer
 	require_once "resources/footer.php";
-
-?>
