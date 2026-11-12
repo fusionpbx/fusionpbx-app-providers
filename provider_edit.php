@@ -356,7 +356,7 @@
 				echo "\$x = 0;\n";
 				foreach ($array['providers'] as $row) {
 					foreach ($row as $key => $value) {
-						echo "\$array['providers'][\$x]['{$key}'] = '{$value}';\n";
+						echo "\$array['providers'][\$x]['{$key}'] = '".escape($value)."';\n";
 					}
 				}
 			}
@@ -366,7 +366,7 @@
 				$i = 1;
 				foreach ($array['provider_settings'] as $row) {
 					foreach ($row as $key => $value) {
-						echo "\$array['providers'][\$x]['provider_settings'][\$y]['{$key}'] = '{$value}';\n";
+						echo "\$array['providers'][\$x]['provider_settings'][\$y]['{$key}'] = '".escape($value)."';\n";
 					}
 					if ($i < $count) {
 						echo "\$y++;\n";
@@ -381,7 +381,7 @@
 				$i = 1;
 				foreach ($array['provider_addresses'] as $row) {
 					foreach ($row as $key => $value) {
-						echo "\$array['providers'][\$x]['provider_addresses'][\$y]['{$key}'] = '{$value}';\n";
+						echo "\$array['providers'][\$x]['provider_addresses'][\$y]['{$key}'] = '".escape($value)."';\n";
 					}
 					if ($i < $count) {
 						echo "\$y++;\n";
@@ -792,7 +792,7 @@
 	echo "	".$text['label-provider_description']."\n";
 	echo "</td>\n";
 	echo "<td class='vtable' style='position: relative;' align='left'>\n";
-	echo "	<textarea class='formfld' name='provider_description' style='width: 185px; height: 80px;'>".($provider_description ?? '')."</textarea>\n";
+	echo "	<textarea class='formfld' name='provider_description' style='width: 185px; height: 80px;'>".escape($provider_description ?? '')."</textarea>\n";
 	echo "<br>\n";
 	echo $text['description-provider_description']."\n";
 	echo "</td>\n";

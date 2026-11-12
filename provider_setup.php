@@ -82,6 +82,10 @@
 	}
 	unset($sql);
 
+//create token
+	$object = new token;
+	$token = $object->create($_SERVER['PHP_SELF']);
+
 //include header
 	$document['title'] = $text['title-providers'];
 	require_once "resources/header.php";
@@ -134,7 +138,7 @@
 			//echo "		<a href=\"provider_delete.php?provider_uuid=".$row['provider_uuid']."\" onclick=\"return confirm(".$text['confirm-delete'].")\"><button type=\"button\" class=\"btn btn-danger\">".$text['button-remove']."</button></a>\n";
 		}
 		else {
-			echo "		<a href=\"provider_setup.php?id=".md5($row['provider_name'])."\" onclick=\"return confirm(".$text['confirm-setup'].")\"><button type=\"button\" class=\"btn btn-success\">".$text['button-setup']."</button></a>\n";
+			echo "		<a href=\"provider_setup.php?id=".md5($row['provider_name'])."&".$token['name']."=".$token['hash']."\" onclick=\"return confirm(".$text['confirm-setup'].")\"><button type=\"button\" class=\"btn btn-success\">".$text['button-setup']."</button></a>\n";
 			//echo "	<button type=\"button\" onclick=\"window.location='provider_setup.php?provider=skyetel'\" class=\"btn btn-primary\">".$text['button-setup']."</button>\n";
 		}
 		echo "	</div>\n";

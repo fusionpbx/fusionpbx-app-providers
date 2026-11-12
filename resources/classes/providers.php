@@ -172,6 +172,18 @@ if (!class_exists('providers')) {
 		 */
 		public function setup() {
 
+			//add multi-lingual support
+				$language = new text;
+				$text = $language->get();
+
+			//validate the token
+				$token = new token;
+				if (!$token->validate($_SERVER['PHP_SELF'])) {
+					message::add($text['message-invalid_token'],'negative');
+					header('Location: '.$this->location);
+					exit;
+				}
+
 			//provider selection
 				$provider_list = glob($_SERVER["DOCUMENT_ROOT"].PROJECT_PATH."/app/*/resources/providers/settings.php");
 				foreach ($provider_list as $setting_path) {
